@@ -5,6 +5,7 @@
 //
 //	mockgen -source=cmd.go -package=rosa -destination=./cmd_mock.go
 //
+
 // Package rosa is a generated GoMock package.
 package rosa
 
@@ -18,6 +19,7 @@ import (
 type MockVerifyRosa struct {
 	ctrl     *gomock.Controller
 	recorder *MockVerifyRosaMockRecorder
+	isgomock struct{}
 }
 
 // MockVerifyRosaMockRecorder is the mock recorder for MockVerifyRosa.

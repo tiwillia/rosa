@@ -5,6 +5,7 @@
 //
 //	mockgen -source=version.go -package=version -destination=./version_mock.go
 //
+
 // Package version is a generated GoMock package.
 package version
 
@@ -19,6 +20,7 @@ import (
 type MockRosaVersion struct {
 	ctrl     *gomock.Controller
 	recorder *MockRosaVersionMockRecorder
+	isgomock struct{}
 }
 
 // MockRosaVersionMockRecorder is the mock recorder for MockRosaVersion.

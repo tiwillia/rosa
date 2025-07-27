@@ -19,6 +19,7 @@ package dlt
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/openshift/rosa/cmd/delete/iamserviceaccount"
 	"github.com/openshift/rosa/cmd/dlt/accountroles"
 	"github.com/openshift/rosa/cmd/dlt/admin"
 	"github.com/openshift/rosa/cmd/dlt/autoscaler"
@@ -52,6 +53,7 @@ var Cmd = &cobra.Command{
 func init() {
 	Cmd.AddCommand(admin.Cmd)
 	Cmd.AddCommand(cluster.Cmd)
+	Cmd.AddCommand(iamserviceaccount.Cmd)
 	Cmd.AddCommand(idp.Cmd)
 	Cmd.AddCommand(ingress.Cmd)
 	machinepoolCommand := machinepool.NewDeleteMachinePoolCommand()

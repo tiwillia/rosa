@@ -5,6 +5,7 @@
 //
 //	mockgen -source=network.go -package=network -destination=network_mock.go
 //
+
 // Package network is a generated GoMock package.
 package network
 
@@ -18,6 +19,7 @@ import (
 type MockNetworkService struct {
 	ctrl     *gomock.Controller
 	recorder *MockNetworkServiceMockRecorder
+	isgomock struct{}
 }
 
 // MockNetworkServiceMockRecorder is the mock recorder for MockNetworkService.

@@ -1,0 +1,13 @@
+- name: cluster
+- name: namespace
+- name: service-account
+- name: role-name
+- name: policy-arns
+- name: path
+- name: permissions-boundary
+- name: managed-policies
+- name: interactive
+- name: mode
+- name: profile
+- name: region
+- name: "yes"

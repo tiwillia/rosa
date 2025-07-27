@@ -5,6 +5,7 @@
 //
 //	mockgen -source=cache.go -package=cache -destination=./cache_mock.go
 //
+
 // Package cache is a generated GoMock package.
 package cache
 
@@ -19,6 +20,7 @@ import (
 type MockRosaCache struct {
 	ctrl     *gomock.Controller
 	recorder *MockRosaCacheMockRecorder
+	isgomock struct{}
 }
 
 // MockRosaCacheMockRecorder is the mock recorder for MockRosaCache.

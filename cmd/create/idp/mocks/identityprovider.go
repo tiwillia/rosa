@@ -5,6 +5,7 @@
 //
 //	mockgen -source=cmd.go -package=mocks -destination=./mocks/identityprovider.go
 //
+
 // Package mocks is a generated GoMock package.
 package mocks
 
@@ -18,6 +19,7 @@ import (
 type MockIdentityProvider struct {
 	ctrl     *gomock.Controller
 	recorder *MockIdentityProviderMockRecorder
+	isgomock struct{}
 }
 
 // MockIdentityProviderMockRecorder is the mock recorder for MockIdentityProvider.

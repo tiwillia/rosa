@@ -1,0 +1,6 @@
+- name: cluster
+- name: role-name
+- name: output
+- name: mode
+- name: profile
+- name: region

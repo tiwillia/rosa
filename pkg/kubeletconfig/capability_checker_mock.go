@@ -5,6 +5,7 @@
 //
 //	mockgen -source=config.go -package=kubeletconfig -destination=capability_checker_mock.go
 //
+
 // Package kubeletconfig is a generated GoMock package.
 package kubeletconfig
 
@@ -18,6 +19,7 @@ import (
 type MockCapabilityChecker struct {
 	ctrl     *gomock.Controller
 	recorder *MockCapabilityCheckerMockRecorder
+	isgomock struct{}
 }
 
 // MockCapabilityCheckerMockRecorder is the mock recorder for MockCapabilityChecker.

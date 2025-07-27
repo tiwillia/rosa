@@ -5,6 +5,7 @@
 //
 //	mockgen -source=machinepool.go -package=machinepool -destination=machinepool_mock.go
 //
+
 // Package machinepool is a generated GoMock package.
 package machinepool
 
@@ -22,6 +23,7 @@ import (
 type MockMachinePoolService struct {
 	ctrl     *gomock.Controller
 	recorder *MockMachinePoolServiceMockRecorder
+	isgomock struct{}
 }
 
 // MockMachinePoolServiceMockRecorder is the mock recorder for MockMachinePoolService.

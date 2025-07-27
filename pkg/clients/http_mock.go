@@ -5,6 +5,7 @@
 //
 //	mockgen -source=http.go -package=clients -destination=./http_mock.go
 //
+
 // Package clients is a generated GoMock package.
 package clients
 
@@ -19,6 +20,7 @@ import (
 type MockHTTPClient struct {
 	ctrl     *gomock.Controller
 	recorder *MockHTTPClientMockRecorder
+	isgomock struct{}
 }
 
 // MockHTTPClientMockRecorder is the mock recorder for MockHTTPClient.

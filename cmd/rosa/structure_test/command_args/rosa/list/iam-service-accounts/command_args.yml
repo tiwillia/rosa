@@ -1,0 +1,6 @@
+- name: cluster
+- name: prefix
+- name: output
+- name: mode
+- name: profile
+- name: region

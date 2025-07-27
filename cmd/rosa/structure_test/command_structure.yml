@@ -19,6 +19,7 @@ children:
     - name: break-glass-credential
     - name: cluster
     - name: dns-domain
+    - name: iam-service-account
     - name: idp
     - name: external-auth-provider
     - name: kubeletconfig
@@ -40,6 +41,7 @@ children:
     - name: cluster
     - name: dns-domain
     - name: external-auth-provider
+    - name: iam-service-account
     - name: idp
     - name: ingress
     - name: kubeletconfig
@@ -61,6 +63,7 @@ children:
     - name: break-glass-credential
     - name: cluster
     - name: external-auth-provider
+    - name: iam-service-account
     - name: ingress
     - name: addon-installation
     - name: kubeletconfig
@@ -112,6 +115,7 @@ children:
     - name: dns-domain
     - name: external-auth-providers
     - name: gates
+    - name: iam-service-accounts
     - name: idps
     - name: ingresses
     - name: instance-types

@@ -228,6 +228,8 @@ type Client interface {
 	GetCFStack(ctx context.Context, stackName string) (*cftypes.Stack, error)
 	DescribeCFStackResources(ctx context.Context, stackName string) (*[]cftypes.StackResource, error)
 	DeleteCFStack(ctx context.Context, stackName string) error
+	ListRoles() ([]iamtypes.Role, error)
+	DeleteRole(role string) error
 }
 
 type AccessKeyGetter interface {

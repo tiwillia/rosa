@@ -5,6 +5,7 @@
 //
 //	mockgen -source=retriever.go -package=version -destination=./retriever_mock.go
 //
+
 // Package version is a generated GoMock package.
 package version
 
@@ -19,6 +20,7 @@ import (
 type MockRetriever struct {
 	ctrl     *gomock.Controller
 	recorder *MockRetrieverMockRecorder
+	isgomock struct{}
 }
 
 // MockRetrieverMockRecorder is the mock recorder for MockRetriever.
