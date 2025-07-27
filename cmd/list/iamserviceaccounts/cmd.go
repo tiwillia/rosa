@@ -124,6 +124,14 @@ func run(cmd *cobra.Command, argv []string) {
 		if cluster.AWS().STS().RoleARN() != "" {
 			// Extract prefix from existing role ARN for more accurate filtering
 			// This matches the logic used in the create command
+			roleARN := cluster.AWS().STS().RoleARN()
+			parts := strings.Split(roleARN, "/")
+			if len(parts) > 1 {
+				roleName := parts[len(parts)-1]
+				if strings.Contains(roleName, "-Installer-Role") {
+					clusterPrefix = strings.Replace(roleName, "-Installer-Role", "", 1)
+				}
+			}
 		}
 
 		var filteredRoles []struct {
