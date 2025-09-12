@@ -1,0 +1,515 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://rosa.redhat.com/schemas/mcp-tools.json",
+  "title": "ROSA MCP Tool Definitions",
+  "description": "JSON Schema definitions for ROSA MCP server tools",
+  "type": "object",
+  "definitions": {
+    "baseToolResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "description": "Whether the operation completed successfully"
+        },
+        "message": {
+          "type": "string",
+          "description": "Human-readable message about the operation result"
+        },
+        "error": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Error code for programmatic handling"
+            },
+            "details": {
+              "type": "string",
+              "description": "Detailed error information"
+            }
+          },
+          "required": ["code", "details"]
+        }
+      },
+      "required": ["success"]
+    }
+  },
+  "properties": {
+    "tools": {
+      "type": "object",
+      "properties": {
+        "get_cluster": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "get_cluster"
+            },
+            "description": {
+              "const": "Retrieve detailed information about an existing ROSA cluster from OpenShift Cluster Manager. Use this tool when you need to check cluster status, get cluster details for troubleshooting, verify cluster configuration, or monitor cluster state during operations. Requires the cluster ID or name."
+            },
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "cluster_id": {
+                  "type": "string",
+                  "description": "Cluster ID or name to retrieve",
+                  "minLength": 1
+                }
+              },
+              "required": ["cluster_id"],
+              "additionalProperties": false
+            },
+            "outputSchema": {
+              "allOf": [
+                {"$ref": "#/definitions/baseToolResponse"},
+                {
+                  "type": "object",
+                  "properties": {
+                    "cluster": {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "string"},
+                        "name": {"type": "string"},
+                        "state": {
+                          "type": "string",
+                          "enum": ["pending", "installing", "ready", "error", "uninstalling"]
+                        },
+                        "region": {"type": "string"},
+                        "version": {"type": "string"},
+                        "created": {"type": "string", "format": "date-time"},
+                        "api_url": {"type": "string", "format": "uri"},
+                        "console_url": {"type": "string", "format": "uri"},
+                        "hosted_cp": {"type": "boolean"}
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "pre_req_get_prerequisite_guide": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "pre_req_get_prerequisite_guide"
+            },
+            "description": {
+              "const": "Get comprehensive markdown guide for ROSA HCP cluster prerequisites and setup workflow. Use this tool at the beginning of the ROSA HCP cluster creation process to understand all required steps, provide users with detailed setup instructions, or when users need guidance on prerequisites like AWS setup, VPC configuration, account roles, OIDC, and operator roles. This guide contains step-by-step instructions for the entire prerequisite workflow."
+            },
+            "inputSchema": {
+              "type": "object",
+              "properties": {},
+              "additionalProperties": false
+            },
+            "outputSchema": {
+              "allOf": [
+                {"$ref": "#/definitions/baseToolResponse"},
+                {
+                  "type": "object",
+                  "properties": {
+                    "guide": {
+                      "type": "string",
+                      "description": "Markdown formatted prerequisites guide"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "pre_req_create_account_roles": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "pre_req_create_account_roles"
+            },
+            "description": {
+              "const": "Create account-wide IAM roles required for ROSA HCP clusters in your AWS account. Use this tool as the first step in ROSA HCP prerequisites when setting up ROSA for the first time in an AWS account, or when account-wide roles are missing or need to be recreated. This creates the installer, support, worker, and user roles that are shared across all ROSA HCP clusters in the account. Only needs to be done once per AWS account."
+            },
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "prefix": {
+                  "type": "string",
+                  "description": "Optional prefix for role names",
+                  "pattern": "^[a-zA-Z0-9-]+$"
+                },
+                "force_policy_creation": {
+                  "type": "boolean",
+                  "description": "Force creation of policies even if they exist",
+                  "default": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "outputSchema": {
+              "allOf": [
+                {"$ref": "#/definitions/baseToolResponse"},
+                {
+                  "type": "object",
+                  "properties": {
+                    "roles": {
+                      "type": "object",
+                      "properties": {
+                        "installer_role_arn": {"type": "string"},
+                        "support_role_arn": {"type": "string"},
+                        "worker_role_arn": {"type": "string"},
+                        "rosa_creator_arn": {"type": "string"}
+                      },
+                      "required": ["installer_role_arn", "support_role_arn", "worker_role_arn", "rosa_creator_arn"]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "pre_req_create_oidc_config": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "pre_req_create_oidc_config"
+            },
+            "description": {
+              "const": "Create OpenID Connect (OIDC) configuration required for ROSA HCP clusters. Use this tool after creating account-wide roles but before creating operator roles. The OIDC configuration is required for cluster creation and manages authentication between AWS and OpenShift. Each OIDC configuration can be reused across multiple clusters. Use this when setting up ROSA HCP for the first time or when you need a new OIDC configuration for additional clusters."
+            },
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": ["auto", "manual"],
+                  "description": "Creation mode - auto creates resources automatically",
+                  "default": "auto"
+                }
+              },
+              "additionalProperties": false
+            },
+            "outputSchema": {
+              "allOf": [
+                {"$ref": "#/definitions/baseToolResponse"},
+                {
+                  "type": "object",
+                  "properties": {
+                    "oidc_config_id": {
+                      "type": "string",
+                      "description": "OIDC configuration ID for cluster creation"
+                    },
+                    "issuer_url": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "OIDC issuer URL"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "pre_req_create_operator_roles": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "pre_req_create_operator_roles"
+            },
+            "description": {
+              "const": "Create operator roles and policies specific to a ROSA HCP cluster. Use this tool after creating account-wide roles and OIDC configuration, but before creating the actual cluster. Operator roles are cluster-specific and handle operations like storage management, cloud provider credentials, and external access. Each cluster needs its own set of operator roles with a unique prefix. Required parameters include the operator role prefix, OIDC config ID, and installer role ARN from previous steps."
+            },
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "prefix": {
+                  "type": "string",
+                  "description": "Required prefix for operator role names",
+                  "pattern": "^[a-zA-Z0-9-]+$",
+                  "minLength": 1
+                },
+                "oidc_config_id": {
+                  "type": "string",
+                  "description": "OIDC configuration ID from previous step",
+                  "minLength": 1
+                },
+                "installer_role_arn": {
+                  "type": "string",
+                  "description": "ARN of the installer role from account roles",
+                  "pattern": "^arn:aws:iam::"
+                }
+              },
+              "required": ["prefix", "oidc_config_id", "installer_role_arn"],
+              "additionalProperties": false
+            },
+            "outputSchema": {
+              "allOf": [
+                {"$ref": "#/definitions/baseToolResponse"},
+                {
+                  "type": "object",
+                  "properties": {
+                    "operator_role_prefix": {
+                      "type": "string",
+                      "description": "Prefix used for created operator roles"
+                    },
+                    "roles_created": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of operator role ARNs created"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "pre_req_setup_vpc": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "pre_req_setup_vpc"
+            },
+            "description": {
+              "const": "Set up Virtual Private Cloud (VPC) infrastructure for ROSA HCP clusters. Use this tool to either create a new VPC using Terraform (recommended for testing/demo) or tag existing VPC subnets with required Kubernetes labels. For new VPC creation, specify 'terraform' method with region and optional cluster name. For existing VPC, specify 'tag_existing' method with public and private subnet IDs that need proper ELB tagging. This step is required before cluster creation and must be completed after AWS account setup but can be done in parallel with role creation."
+            },
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "method": {
+                  "type": "string",
+                  "enum": ["terraform", "tag_existing"],
+                  "description": "VPC setup method"
+                },
+                "region": {
+                  "type": "string",
+                  "description": "AWS region for VPC creation",
+                  "default": "us-east-1"
+                },
+                "cluster_name": {
+                  "type": "string",
+                  "description": "Optional cluster name for Terraform VPC",
+                  "pattern": "^[a-zA-Z0-9-]+$"
+                },
+                "subnet_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^subnet-[a-zA-Z0-9]+"
+                  },
+                  "description": "Subnet IDs to tag (for tag_existing method)"
+                },
+                "public_subnets": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^subnet-[a-zA-Z0-9]+"
+                  },
+                  "description": "Public subnet IDs for ELB tagging"
+                },
+                "private_subnets": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^subnet-[a-zA-Z0-9]+"
+                  },
+                  "description": "Private subnet IDs for internal ELB tagging"
+                }
+              },
+              "required": ["method"],
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "method": {"const": "tag_existing"}
+                    }
+                  },
+                  "then": {
+                    "anyOf": [
+                      {"required": ["public_subnets"]},
+                      {"required": ["private_subnets"]}
+                    ]
+                  }
+                }
+              ],
+              "additionalProperties": false
+            },
+            "outputSchema": {
+              "allOf": [
+                {"$ref": "#/definitions/baseToolResponse"},
+                {
+                  "type": "object",
+                  "properties": {
+                    "vpc_id": {
+                      "type": "string",
+                      "description": "VPC ID"
+                    },
+                    "subnet_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Array of subnet IDs for cluster creation"
+                    },
+                    "availability_zones": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Array of availability zones corresponding to subnets"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "create_rosa_hcp_cluster": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "const": "create_rosa_hcp_cluster"
+            },
+            "description": {
+              "const": "Create a ROSA HCP (Hosted Control Plane) cluster after all prerequisites are completed. Use this tool as the final step in the ROSA HCP setup process when you have: 1) Account-wide roles created, 2) OIDC configuration created, 3) Operator roles created with a unique prefix, 4) VPC with properly tagged subnets configured. This tool requires all the ARNs, IDs, and configuration details from the previous prerequisite steps. The cluster creation process can take 10-40 minutes to complete."
+            },
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "cluster_name": {
+                  "type": "string",
+                  "description": "Name for the cluster",
+                  "pattern": "^[a-zA-Z0-9-]+$",
+                  "minLength": 1,
+                  "maxLength": 54
+                },
+                "aws_account_id": {
+                  "type": "string",
+                  "description": "AWS account ID",
+                  "pattern": "^[0-9]{12}$"
+                },
+                "billing_account_id": {
+                  "type": "string",
+                  "description": "Billing account ID (usually same as AWS account)",
+                  "pattern": "^[0-9]{12}$"
+                },
+                "region": {
+                  "type": "string",
+                  "description": "AWS region for cluster",
+                  "default": "us-east-1"
+                },
+                "subnet_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^subnet-[a-zA-Z0-9]+"
+                  },
+                  "description": "Array of subnet IDs for cluster",
+                  "minItems": 1
+                },
+                "availability_zones": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Array of availability zones corresponding to subnets",
+                  "minItems": 1
+                },
+                "role_arn": {
+                  "type": "string",
+                  "description": "Installer role ARN",
+                  "pattern": "^arn:aws:iam::"
+                },
+                "support_role_arn": {
+                  "type": "string",
+                  "description": "Support role ARN",
+                  "pattern": "^arn:aws:iam::"
+                },
+                "worker_role_arn": {
+                  "type": "string",
+                  "description": "Worker role ARN",
+                  "pattern": "^arn:aws:iam::"
+                },
+                "rosa_creator_arn": {
+                  "type": "string",
+                  "description": "ROSA creator role ARN",
+                  "pattern": "^arn:aws:iam::"
+                },
+                "operator_role_prefix": {
+                  "type": "string",
+                  "description": "Operator roles prefix",
+                  "pattern": "^[a-zA-Z0-9-]+$",
+                  "minLength": 1
+                },
+                "oidc_config_id": {
+                  "type": "string",
+                  "description": "OIDC configuration ID",
+                  "minLength": 1
+                },
+                "private": {
+                  "type": "boolean",
+                  "description": "Whether to create a private cluster",
+                  "default": false
+                },
+                "machine_cidr": {
+                  "type": "string",
+                  "description": "Machine CIDR for VPC",
+                  "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$",
+                  "default": "10.0.0.0/16"
+                },
+                "multi_arch_enabled": {
+                  "type": "boolean",
+                  "description": "Enable multi-architecture support",
+                  "default": false
+                },
+                "domain_prefix": {
+                  "type": "string",
+                  "description": "Custom domain prefix (max 15 chars)",
+                  "pattern": "^[a-zA-Z0-9-]+$",
+                  "maxLength": 15
+                }
+              },
+              "required": [
+                "cluster_name",
+                "aws_account_id", 
+                "billing_account_id",
+                "subnet_ids",
+                "availability_zones",
+                "role_arn",
+                "support_role_arn",
+                "worker_role_arn",
+                "rosa_creator_arn",
+                "operator_role_prefix",
+                "oidc_config_id"
+              ],
+              "additionalProperties": false
+            },
+            "outputSchema": {
+              "allOf": [
+                {"$ref": "#/definitions/baseToolResponse"},
+                {
+                  "type": "object",
+                  "properties": {
+                    "cluster": {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "string"},
+                        "name": {"type": "string"},
+                        "state": {"type": "string"},
+                        "api_url": {"type": "string", "format": "uri"},
+                        "console_url": {"type": "string", "format": "uri"},
+                        "region": {"type": "string"}
+                      }
+                    },
+                    "installation_log_command": {
+                      "type": "string",
+                      "description": "Command to monitor installation logs"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
